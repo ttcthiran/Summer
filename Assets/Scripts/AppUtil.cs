@@ -67,9 +67,11 @@ public static class AppUtil
     /// </summary>
     /// <param name='camera'>カメラ</param>
     /// <returns>タッチワールドポジション。タッチされていない場合は (0, 0, 0)</returns>
-    public static Vector3 GetTouchWorldPosition(Camera camera)
+    public static Vector3 GetTouchWorldPosition(Camera camera, float z = 0f)
     {
-        return camera.ScreenToWorldPoint(GetTouchPosition());
+        Vector3 position = GetTouchPosition();
+        position.z = z;
+        return camera.ScreenToWorldPoint(position);
     }
 }
 

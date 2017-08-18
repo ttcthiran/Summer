@@ -5,13 +5,12 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     [SerializeField]
-    private float baseTime = 0f;
+    private GameObject touchParticleInstance;
 
-    private bool hooldTypeVertical = true;
+    [SerializeField]
+    private GameObject baldeInstance;
 
-    private float startTime = 0f;
-
-    private Vector3 eulerAngle = Vector3.zero;
+    private Vector3 beganPosition;
 
     // Use this for initialization
     void Start()
@@ -21,37 +20,30 @@ public class PlayerControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateHoldType();
-
-        float diff = Time.timeSinceLevelLoad - this.startTime;
-        float rate = diff / baseTime;
-
-        if(diff > baseTime)
+        if(AppUtil.GetTouch() == TouchInfo.Began)
         {
+            beganPosition = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
+        }
+        else if( AppUtil.GetTouch() == TouchInfo.Ended)
+        {
+            Vector3 endPosition = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
+
+            /// 視点、終点をもとにブレードを配置する
+            GameObject obj = Instantiate(baldeInstance, (beganPosition + endPosition) * 0.5f, Quaternion.identity);
+
+            obj.transform.up = (endPosition - this.beganPosition).normalized;
+
+            Destroy(obj, 2f);
 
         }
-        else
+        else if(AppUtil.GetTouch() == TouchInfo.Moved)
         {
-            if (this.hooldTypeVertical)
-            {
-                this.transform.eulerAngles = Vector3.Lerp(this.eulerAngle, new Vector3(0f, 0f, 0f), rate);
-            }
-            else
-            {
-                this.transform.eulerAngles = Vector3.Lerp(this.eulerAngle, new Vector3(0f, 0f, 70f), rate);
-            }
-        }
-    }
+            gameObject.transform.position = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
 
-    private void UpdateHoldType()
-    {
-        if (AppUtil.GetTouch() == TouchInfo.Began)
-        {
-            this.hooldTypeVertical = !this.hooldTypeVertical;
+            GameObject obj = Instantiate(touchParticleInstance, gameObject.transform.position, Quaternion.identity, this.transform);
 
-            this.startTime = Time.timeSinceLevelLoad;
-
-            this.eulerAngle = this.transform.localRotation.eulerAngles;
+            // 1秒後に消す
+            Destroy(obj, 1f);
         }
     }
 }

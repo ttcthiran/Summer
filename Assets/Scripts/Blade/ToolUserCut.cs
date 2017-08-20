@@ -35,24 +35,24 @@ public class ToolUserCut : MonoBehaviour
             }
 
             /// 今切った
-            //wmelon.IsCutted = true;
+            wmelon.IsCutted = true;
 
             GameObject victim = hit.collider.gameObject;
             GameObject[] pieces = BLINDED_AM_ME.MeshCut.Cut(victim, transform.position, transform.right, capMaterial);
 
-            Rigidbody rigidRight = pieces[0].GetComponent<Rigidbody>();
-            Rigidbody rigidLeft = pieces[1].GetComponent<Rigidbody>();
+            Rigidbody rigidLeft = pieces[0].GetComponent<Rigidbody>();
+            Rigidbody rigidRight = pieces[1].GetComponent<Rigidbody>();
             if (!pieces[1].GetComponent<Rigidbody>())
             {
-                rigidLeft = pieces[1].AddComponent(typeof(Rigidbody)) as Rigidbody;
-                rigidLeft.mass = rigidRight.mass;
-                rigidLeft.interpolation = rigidRight.interpolation;
+                rigidRight = pieces[1].AddComponent(typeof(Rigidbody)) as Rigidbody;
+                rigidRight.mass = rigidLeft.mass;
+                rigidRight.interpolation = rigidLeft.interpolation;
             }
 
             Vector3 velocity = victim.GetComponent<Rigidbody>().velocity;
 
-            rigidRight.velocity = Quaternion.Euler(0f,  45, 0f) * velocity * 0.6f;
-            rigidLeft.velocity = Quaternion.Euler(0f, -45, 0f) * velocity * 0.6f;
+            rigidLeft.velocity = Quaternion.Euler(0f,  45, 0f) * velocity * 0.6f;
+            rigidRight.velocity = Quaternion.Euler(0f, -45, 0f) * velocity * 0.6f;
 
             /// 試しにバレットタイム
             GameManager.Instance.StartBulletTime();

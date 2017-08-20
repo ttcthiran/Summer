@@ -10,6 +10,9 @@ public class PlayerControl : MonoBehaviour
     [SerializeField]
     private GameObject baldeInstance;
 
+    [SerializeField]
+    private float bladeLineMinDistance = 0f;
+
     private Vector3 beganPosition;
 
     // Use this for initialization
@@ -22,29 +25,33 @@ public class PlayerControl : MonoBehaviour
     {
         if (AppUtil.GetTouch() == TouchInfo.Began)
         {
-            beganPosition = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
+            this.beganPosition = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
         }
         else if (AppUtil.GetTouch() == TouchInfo.Ended)
         {
             Vector3 endPosition = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
+            float magnitude = (endPosition - beganPosition).magnitude;
 
-            /// オブジェクト生成
-            GameObject obj = Instantiate(baldeInstance, beganPosition, Quaternion.identity);
+            if (magnitude >= this.bladeLineMinDistance)
+            {
+                /// オブジェクト生成
+                GameObject obj = Instantiate(this.baldeInstance, this.beganPosition, Quaternion.identity);
 
-            /// 視点、終点をもとにブレードの向きを設定
-            obj.transform.up = (endPosition - this.beganPosition).normalized;
+                /// 視点、終点をもとにブレードの向きを設定
+                obj.transform.up = (endPosition - this.beganPosition).normalized;
 
-            /// ブレードの長さ
-            obj.GetComponentInChildren<ToolUserCut>().BladeDistance = (endPosition - this.beganPosition).magnitude;
+                /// ブレードの長さ
+                obj.GetComponentInChildren<ToolUserCut>().BladeDistance = (endPosition - this.beganPosition).magnitude;
 
-            Destroy(obj, 2f);
-
+                /// 何も切らなくても指定秒数後に消える
+                Destroy(obj, 2f);
+            }
         }
         else if (AppUtil.GetTouch() == TouchInfo.Moved)
         {
             gameObject.transform.position = AppUtil.GetTouchWorldPosition(Camera.main, Camera.main.nearClipPlane + 1.0f);
 
-            GameObject obj = Instantiate(touchParticleInstance, gameObject.transform.position, Quaternion.identity, this.transform);
+            GameObject obj = Instantiate(this.touchParticleInstance, gameObject.transform.position, Quaternion.identity, this.transform);
 
             // 1秒後に消す
             Destroy(obj, 1f);

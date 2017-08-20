@@ -16,7 +16,7 @@ public class Watermelon : MonoBehaviour {
     {
         Rigidbody rig = this.GetComponent<Rigidbody>();
 
-        /// なんとなく回転させる
+        /// 賑やかしで回転させる
         Vector3 torqe = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
         rig.AddTorque(torqe);
     }

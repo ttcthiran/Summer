@@ -9,6 +9,11 @@ public class ToolUserCut : MonoBehaviour
 
     [SerializeField]
     private float bladeDistance = 0f;
+    public float BladeDistance
+    {
+        get { return this.bladeDistance; }
+        set { this.bladeDistance = value; }
+    }
 
     // Use this for initialization
     void Start()
@@ -30,7 +35,7 @@ public class ToolUserCut : MonoBehaviour
             }
 
             /// 今切った
-            wmelon.IsCutted = true;
+            //wmelon.IsCutted = true;
 
             GameObject victim = hit.collider.gameObject;
             GameObject[] pieces = BLINDED_AM_ME.MeshCut.Cut(victim, transform.position, transform.right, capMaterial);
@@ -52,8 +57,12 @@ public class ToolUserCut : MonoBehaviour
             /// 試しにバレットタイム
             GameManager.Instance.StartBulletTime();
 
+            /// 分割したオブジェクトは時間経過で消す
             Destroy(pieces[0].gameObject, 2);
             Destroy(pieces[1].gameObject, 2);
+
+            /// 親も含めて刀身は消える
+            Destroy(this.transform.parent.gameObject);
         }
     }
 
